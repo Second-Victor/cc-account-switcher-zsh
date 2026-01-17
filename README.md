@@ -1,13 +1,14 @@
 # Multi-Account Switcher for Claude Code
 
-A simple tool to manage and switch between multiple Claude Code accounts on macOS
+A simple tool to manage and switch between multiple Claude Code accounts on macOS, Linux, and WSL.
 
 ## Features
 
 - **Multi-account management**: Add, remove, and list Claude Code accounts
 - **Quick switching**: Switch between accounts with simple commands
-- **Cross-platform**: Works on macOS
-- **Secure storage**: Uses system keychain (macOS)
+- **Cross-platform**: Works on macOS, Linux, and WSL
+- **Secure storage**: Uses system keychain (macOS) or protected files (Linux/WSL)
+- **Smart keychain handling**: Automatically detects and manages different Claude Code keychain service names
 - **Settings preservation**: Only switches authentication - your themes, settings, and preferences remain unchanged
 
 ## Installation
@@ -15,7 +16,7 @@ A simple tool to manage and switch between multiple Claude Code accounts on macO
 Download the script directly:
 
 ```bash
-curl -O https://raw.githubusercontent.com/Second-Victor/cc-account-switcher.zsh/main/cc-switcher.zsh
+curl -O https://raw.githubusercontent.com/Second-Victor/cc-account-switcher-zsh/main/cc-switcher.zsh
 chmod +x cc-switcher.zsh
 ```
 
@@ -25,39 +26,39 @@ chmod +x cc-switcher.zsh
 
 ```bash
 # Add current account to managed accounts
-./ccswitch.sh --add-account
+./cc-switcher.zsh --add-account
 
 # List all managed accounts
-./ccswitch.sh --list
+./cc-switcher.zsh --list
 
 # Switch to next account in sequence
-./ccswitch.sh --switch
+./cc-switcher.zsh --switch
 
 # Switch to specific account by number or email
-./ccswitch.sh --switch-to 2
-./ccswitch.sh --switch-to user2@example.com
+./cc-switcher.zsh --switch-to 2
+./cc-switcher.zsh --switch-to user2@example.com
 
 # Remove an account
-./ccswitch.sh --remove-account user2@example.com
+./cc-switcher.zsh --remove-account user2@example.com
 
 # Show help
-./ccswitch.sh --help
+./cc-switcher.zsh --help
 ```
 
 ### First Time Setup
 
 1. **Log into Claude Code** with your first account (make sure you're actively logged in)
-2. Run `./ccswitch.sh --add-account` to add it to managed accounts
+2. Run `./cc-switcher.zsh --add-account` to add it to managed accounts
 3. **Log out** and log into Claude Code with your second account
-4. Run `./ccswitch.sh --add-account` again
-5. Now you can switch between accounts with `./ccswitch.sh --switch`
+4. Run `./cc-switcher.zsh --add-account` again
+5. Now you can switch between accounts with `./cc-switcher.zsh --switch`
 6. **Important**: After each switch, restart Claude Code to use the new authentication
 
 > **What gets switched:** Only your authentication credentials change. Your themes, settings, preferences, and chat history remain exactly the same.
 
 ## Requirements
 
-- Bash 4.4+
+- Zsh 5.0+
 - `jq` (JSON processor)
 
 ### Installing Dependencies
@@ -78,19 +79,21 @@ sudo apt install jq
 
 The switcher stores account authentication data separately:
 
-- **macOS**: Credentials in Keychain, OAuth info in `~/.claude-switch-backup/`
+- **macOS**: Credentials in Keychain (with service name tracking), OAuth info in `~/.claude-switch-backup/`
+- **Linux/WSL**: Both credentials and OAuth info in `~/.claude-switch-backup/` with restricted permissions
 
 When switching accounts, it:
 
 1. Backs up the current account's authentication data
 2. Restores the target account's authentication data
-3. Updates Claude Code's authentication files
+3. Manages the correct keychain service name for each account (macOS)
+4. Updates Claude Code's authentication files
 
 ## Troubleshooting
 
 ### If a switch fails
 
-- Check that you have accounts added: `./ccswitch.sh --list`
+- Check that you have accounts added: `./cc-switcher.zsh --list`
 - Verify Claude Code is closed before switching
 - Try switching back to your original account
 
@@ -103,15 +106,15 @@ When switching accounts, it:
 ### If Claude Code doesn't recognize the new account
 
 - Make sure you restarted Claude Code after switching
-- Check the current account: `./ccswitch.sh --list` (look for "(active)")
+- Check the current account: `./cc-switcher.zsh --list` (look for "(active)")
 
 ## Cleanup/Uninstall
 
 To stop using this tool and remove all data:
 
-1. Note your current active account: `./ccswitch.sh --list`
+1. Note your current active account: `./cc-switcher.zsh --list`
 2. Remove the backup directory: `rm -rf ~/.claude-switch-backup`
-3. Delete the script: `rm ccswitch.sh`
+3. Delete the script: `rm cc-switcher.zsh`
 
 Your current Claude Code login will remain active.
 
